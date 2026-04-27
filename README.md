@@ -60,7 +60,7 @@ Docker Host
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/TON_USERNAME/hadoop-cluster-docker.git
+git clone https://github.com/Ranim0208/hadoop-Cluster.git
 cd hadoop-cluster-docker
 ```
 
