@@ -60,7 +60,7 @@ Docker Host
 ### 1. Cloner le projet
 
 ```bash
-git clone https://github.com/Ranim0208/hadoop-Cluster.git
+git clone https://github.com/TON_USERNAME/hadoop-cluster-docker.git
 cd hadoop-cluster-docker
 ```
 
@@ -86,34 +86,6 @@ namenode    Up (healthy)
 datanode1   Up
 datanode2   Up
 ```
-
----
-
-## ✅ Vérification du cluster
-
-Attendre ~30 secondes après le démarrage, puis :
-
-```bash
-docker exec -it namenode bash
-hdfs dfsadmin -report
-```
-
-Résultat attendu :
-
-```
-Live datanodes (2):
-  - datanode1
-  - datanode2
-```
-
----
-
-## 🌐 Interfaces Web
-
-| Interface | URL | Description |
-|-----------|-----|-------------|
-| HDFS NameNode UI | http://localhost:9870 | État HDFS, DataNodes, fichiers |
-| YARN ResourceManager UI | http://localhost:8088 | Suivi des jobs MapReduce |
 
 ---
 
@@ -197,32 +169,3 @@ docker compose down
 
 > ⚠️ Les données HDFS sont perdues à l'arrêt car stockées dans les conteneurs.
 > Pour les persister, les volumes Docker sont déjà configurés dans le `docker-compose.yml`.
-
----
-
-## 🧰 Commandes utiles
-
-```bash
-# Voir les logs du NameNode
-docker logs namenode
-
-# Entrer dans un DataNode
-docker exec -it datanode1 bash
-
-# Lister les fichiers HDFS
-hdfs dfs -ls /
-
-# Espace disque HDFS
-hdfs dfs -df -h
-
-# Rebuild complet
-docker compose down
-docker compose build --no-cache
-docker compose up -d
-```
-
----
-
-## 👤 Auteur
-
-Projet réalisé dans le cadre du cours **Big Data** — L2 Big Data
