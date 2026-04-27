@@ -1,0 +1,55 @@
+services:
+  namenode:
+    build: .
+    container_name: namenode
+    hostname: namenode
+    environment:
+      - NODE_TYPE=namenode
+    ports:
+      - "9870:9870"
+      - "8088:8088"
+      - "9000:9000"
+    volumes:
+      - namenode_data:/opt/hadoop/data/namenode
+    networks:
+      - hadoop_network
+    healthcheck:
+      test: ["CMD", "hdfs", "dfsadmin", "-report"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  datanode1:
+    build: .
+    container_name: datanode1
+    hostname: datanode1
+    environment:
+      - NODE_TYPE=datanode
+    volumes:
+      - datanode1_data:/opt/hadoop/data/datanode
+    networks:
+      - hadoop_network
+    depends_on:
+      - namenode
+
+  datanode2:
+    build: .
+    container_name: datanode2
+    hostname: datanode2
+    environment:
+      - NODE_TYPE=datanode
+    volumes:
+      - datanode2_data:/opt/hadoop/data/datanode
+    networks:
+      - hadoop_network
+    depends_on:
+      - namenode
+
+volumes:
+  namenode_data:
+  datanode1_data:
+  datanode2_data:
+
+networks:
+  hadoop_network:
+    driver: bridge
