@@ -13,38 +13,45 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Variables Hadoop
+# ─── HADOOP ───────────────────────────────────────────────────────────────────
 ENV HADOOP_VERSION=3.3.6
 ENV HADOOP_HOME=/opt/hadoop
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ENV PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
 
-# Téléchargement et installation Hadoop
 RUN wget https://downloads.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz \
     && tar -xzf hadoop-${HADOOP_VERSION}.tar.gz -C /opt/ \
     && mv /opt/hadoop-${HADOOP_VERSION} $HADOOP_HOME \
     && rm hadoop-${HADOOP_VERSION}.tar.gz
 
-# Copie des fichiers de configuration
-COPY config/ $HADOOP_HOME/etc/hadoop/
+# ─── SPARK ────────────────────────────────────────────────────────────────────
+ENV SPARK_VERSION=3.5.1
+ENV SPARK_HOME=/opt/spark
+ENV PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin
+ENV PYSPARK_PYTHON=python3
 
-# Configuration Java pour Hadoop
+RUN wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz \
+    && tar -xzf spark-${SPARK_VERSION}-bin-hadoop3.tgz -C /opt/ \
+    && mv /opt/spark-${SPARK_VERSION}-bin-hadoop3 $SPARK_HOME \
+    && rm spark-${SPARK_VERSION}-bin-hadoop3.tgz
+
+# ─── CONFIGURATION ────────────────────────────────────────────────────────────
+COPY config/ $HADOOP_HOME/etc/hadoop/
 RUN echo "export JAVA_HOME=${JAVA_HOME}" >> $HADOOP_HOME/etc/hadoop/hadoop-env.sh
 
-# Création des dossiers de données
+# Dossiers de données
 RUN mkdir -p /opt/hadoop/data/namenode \
     && mkdir -p /opt/hadoop/data/datanode
 
-# Configuration SSH
+# SSH
 RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa \
     && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys \
     && chmod 0600 ~/.ssh/authorized_keys
 
-# Copie du script entrypoint
+# Scripts
 COPY scripts/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Copie des scripts MapReduce
 COPY mapreduce/ /mapreduce/
 
 ENTRYPOINT ["/entrypoint.sh"]

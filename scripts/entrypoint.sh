@@ -28,8 +28,20 @@ case $NODE_TYPE in
         echo "Starting NodeManager..."
         yarn nodemanager
         ;;
+    spark-master)
+        echo "Starting Spark Master..."
+        $SPARK_HOME/sbin/start-master.sh
+        echo "Spark Master started!"
+        tail -f $SPARK_HOME/logs/*.out
+        ;;
+    spark-worker)
+        echo "Starting Spark Worker..."
+        $SPARK_HOME/sbin/start-worker.sh $SPARK_MASTER
+        echo "Spark Worker started!"
+        tail -f $SPARK_HOME/logs/*.out
+        ;;
     *)
-        echo "ERROR: NODE_TYPE not set. Use 'namenode' or 'datanode'"
+        echo "ERROR: NODE_TYPE not set."
         exit 1
         ;;
 esac
