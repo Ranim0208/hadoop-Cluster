@@ -45,6 +45,44 @@ services:
     depends_on:
       - namenode
 
+  spark-master:
+    build: .
+    container_name: spark-master
+    hostname: spark-master
+    environment:
+      - NODE_TYPE=spark-master
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    networks:
+      - hadoop_network
+    depends_on:
+      - namenode
+
+  spark-worker1:
+    build: .
+    container_name: spark-worker1
+    hostname: spark-worker1
+    environment:
+      - NODE_TYPE=spark-worker
+      - SPARK_MASTER=spark://spark-master:7077
+    networks:
+      - hadoop_network
+    depends_on:
+      - spark-master
+
+  spark-worker2:
+    build: .
+    container_name: spark-worker2
+    hostname: spark-worker2
+    environment:
+      - NODE_TYPE=spark-worker
+      - SPARK_MASTER=spark://spark-master:7077
+    networks:
+      - hadoop_network
+    depends_on:
+      - spark-master
+
 volumes:
   namenode_data:
   datanode1_data:
